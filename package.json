@@ -1,0 +1,19 @@
+{
+  "name": "membrane-backend-cc",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ivancardozo11/membrane-backend-cc.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ivancardozo11/membrane-backend-cc/issues"
+  },
+  "homepage": "https://github.com/ivancardozo11/membrane-backend-cc#readme"
+}
