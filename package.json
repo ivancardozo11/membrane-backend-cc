@@ -10,10 +10,5 @@
     "type": "git",
     "url": "git+https://github.com/ivancardozo11/membrane-backend-cc.git"
   },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/ivancardozo11/membrane-backend-cc/issues"
-  },
-  "homepage": "https://github.com/ivancardozo11/membrane-backend-cc#readme"
+  "author": "Ivan Cardozo"
 }
