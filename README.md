@@ -1,22 +1,12 @@
 # membrane-backend-cc
 
-├── src
+├── src/
 
-    ├── microservices
+│   ├── microservices/
 
-│   │   ├── market-depth-service
+│   │   ├── market-depth-service/
 
-│   │   │   │   ├── data-consumer.js
-
-│   │   │   ├── tests
-
-│   │   │   ├── package.json
-
-│   │   │   └── Dockerfile
-
-│   │   └── data-provider-service
-
-│   │   │   │   ├── market-depth-analysis.js
+│   │   │   ├── data-consumer.js
 
 │   │   │   ├── tests
 
@@ -24,13 +14,23 @@
 
 │   │   │   └── Dockerfile
 
-│   └── api
+│   │   └── data-provider-service/
 
-│   │   └── routes.js
+│   │       ├── market-depth-analysis.js
+
+│   │       ├── tests
+
+│   │       ├── package.json
+
+│   │       └── Dockerfile
+
+│   └── api/
+
+│       ├── routes
+
+        └── routes.js
 
 ├── server.js
-
-├── tests
 
 ├── .eslintrc
 
