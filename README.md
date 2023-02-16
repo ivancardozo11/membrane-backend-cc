@@ -14,25 +14,25 @@
 
 │   │   │   └── Dockerfile
 
-│   │   └── data-provider-service/
+│   │   ├── data-provider-service/
 
-│   │       ├── market-depth-analysis.js
+│   │   │    ├── market-depth-analysis.js
 
-│   │       ├── tests
+│   │   │    ├── tests
 
-│   │       ├── package.json
+│   │   │   ├── package.json
 
-│   │       └── Dockerfile
+│   │   │    └── Dockerfile
 
 │   └── api/
 
+
 │       ├── routes
 
-        └── routes.js
+
+           └── routes.js
 
 ├── server.js
-
-├── .eslintrc
 
 ├── .gitignore
 
