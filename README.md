@@ -12,7 +12,9 @@
 
 │   │   │   ├── package.json
 
-│   │   │   └── Dockerfile
+│   │   │   ├── Dockerfile
+
+│   │   │   └── index.js
 
 │   │   ├── data-provider-service/
 
@@ -20,17 +22,17 @@
 
 │   │   │    ├── tests
 
-│   │   │   ├── package.json
+│   │   │    ├── package.json
 
-│   │   │    └── Dockerfile
+│   │   │    ├── Dockerfile
+
+│   │   │    └── index.js
 
 │   └── api/
 
-
 │       ├── routes
 
-
-           └── routes.js
+             └── routes.js
 
 ├── server.js
 
