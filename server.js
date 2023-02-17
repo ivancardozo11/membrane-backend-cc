@@ -2,7 +2,6 @@ import express from 'express';
 import morgan from 'morgan';
 import winston from 'winston';
 import apiRoutes from './src/api/routes/routes.js';
-import dataProviderRouter from './src/microservices/data-provider-service/api/data-provider-routes/dataProviderRoutes.js';
 
 
 // Initialize the winston logger for logging server events

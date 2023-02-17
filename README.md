@@ -28,6 +28,7 @@ Jest is used to test the different parts of the application, ensuring that every
 
 
 Structure tree:
+
 ├── src/
 
 │   └── api/
