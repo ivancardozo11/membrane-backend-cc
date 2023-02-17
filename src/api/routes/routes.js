@@ -1,10 +1,8 @@
 import express from 'express';
+import dataProviderRouter from '../../microservices/data-provider-service/api/data-provider-routes/dataProviderRoutes.js';
 
-const router = express.Router();
+const app = express();
 
-// API routes
-router.get('/', (req, res) => {
-  res.send('Routes are working');
-});
+app.use('/data-provider', dataProviderRouter);
 
-export default router;
+export default app;

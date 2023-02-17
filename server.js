@@ -2,6 +2,8 @@ import express from 'express';
 import morgan from 'morgan';
 import winston from 'winston';
 import apiRoutes from './src/api/routes/routes.js';
+import dataProviderRouter from './src/microservices/data-provider-service/api/data-provider-routes/dataProviderRoutes.js';
+
 
 // Initialize the winston logger for logging server events
 const logger = winston.createLogger({
@@ -9,7 +11,7 @@ const logger = winston.createLogger({
   level: 'info',
   // Format log messages with timestamp and JSON
   format: winston.format.combine(
-    winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss.SSS' }),
+    winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
     winston.format.json(),
   ),
   // Set default metadata to identify the service
@@ -54,6 +56,7 @@ app.use(express.urlencoded({ extended: false }));
 
 // API routes
 app.use('/api', apiRoutes);
+
 
 // Set the server port
 const port = process.env.PORT || 8080;
