@@ -1,4 +1,16 @@
-*Membrane Backend CC*
+# Membrane Backend CC
+
+<p align="center">
+  
+  <img src="Tradesocket.png" width="500" height="300">
+  
+</p>
+<p align="center"><i>This image was generated with Dall-e 2 AI</i></p>
+
+<br>
+<br>
+<br>
+          
 
 
 The Membrane Backend CC is a Node.js server application that serves as a bridge between different market data sources and a client-side application that displays the data. The objective of this application is to provide a unified API that allows the client-side application to request market data from different sources without having to worry about the specifics of each source.
@@ -27,7 +39,12 @@ The Membrane Backend CC fulfills part of the requirements of the technical chall
 Jest is used to test the different parts of the application, ensuring that everything is working as expected. The Membrane Backend CC implements unit tests, integration tests, and end-to-end tests to ensure that the application is working correctly.
 
 
-Structure tree:
+# Structure tree:
+
+<br>
+<br>
+<br>
+
 ├── src/
 
 │   └── api/
