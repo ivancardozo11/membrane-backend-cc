@@ -1,40 +1,38 @@
 import express from 'express';
-import morgan from 'morgan';
 import cors from 'cors';
+import morgan from 'morgan';
+import http from 'http';
+import { Server } from 'socket.io';
+import dataConsumer from './data-consumer.js';
+import dataProviderRoutes from '../data-provider-service/api/data-provider-routes/dataProviderRoutes.js';
 import winston from 'winston';
-import dataProviderRouter from '../data-provider-service/api/data-provider-routes/dataProviderRoutes.js';
 
 const app = express();
 
-// Initialize the winston logger for logging server events
+// Enable CORS
+app.use(cors());
+
+/*
+Enable Morgan to log HTTP requests, 
+using the Combined format for detailed loggingIP address, HTTP method, requested URL, 
+response status, and more.
+*/
+app.use(morgan('combined'));
+
+// Create a Winston logger
 const logger = winston.createLogger({
-  // Set logging level to info
   level: 'info',
-  // Format log messages with timestamp and JSON
   format: winston.format.combine(
     winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
     winston.format.json(),
   ),
-  // Set default metadata to identify the service
   defaultMeta: { service: 'data-provider-service' },
-  // Define transports to handle logging
   transports: [
-    // Log to the console
     new winston.transports.Console(),
-    // Log errors to a separate file
+    new winston.transports.File({ filename: 'logs/data-provider-service.log' }),
     new winston.transports.File({
-      filename: 'error.log',
+      filename: 'logs/data-provider-service-error.log',
       level: 'error',
-      // Format error messages with timestamp and JSON
-      format: winston.format.combine(
-        winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-        winston.format.json(),
-      ),
-    }),
-    // Log all messages to a combined file
-    new winston.transports.File({
-      filename: 'combined.log',
-      // Format messages with timestamp and JSON
       format: winston.format.combine(
         winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
         winston.format.json(),
@@ -43,23 +41,38 @@ const logger = winston.createLogger({
   ],
 });
 
-// Configuring middleware
-app.use(morgan('dev'));
-app.use(cors());
-app.use(express.json());
+// Log a message when the server starts
+logger.info('Starting data provider service...');
 
-// Setting up routes
-app.use('/data-provider', dataProviderRouter);
-
-
-// Setting up error handling
-app.use((err, req, res, next) => {
-  logger.error(err.stack);
-  res.status(500).send('Something broke!');
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: '*',
+  },
 });
+
+// Connect to the external exchange API through a WebSocket connection
+dataConsumer(io);
+
+// Register data provider routes
+app.use('/data-provider', dataProviderRoutes);
 
 const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => {
-  logger.info(`Server running on port ${PORT} 🚀`);
+server.listen(PORT, () => {
+  logger.info(`Data provider service running on port ${PORT}`);
 });
+
+// Handle WebSocket connection errors
+io.on('connect_error', (err) => {
+  logger.error(`Socket.io connection error: ${err.message}`);
+});
+
+// Handle WebSocket disconnections
+io.on('disconnect', (reason) => {
+  logger.warn(`Socket.io disconnected: ${reason}`);
+  logger.warn(`Trying to reconnect to Socket.io...`);
+  dataConsumer(io);
+});
+
+
+export default dataProviderServer;

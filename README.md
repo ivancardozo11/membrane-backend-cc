@@ -55,22 +55,6 @@ Jest is used to test the different parts of the application, ensuring that every
 
 │   ├── microservices/
 
-│   │   ├── market-depth-service/
-
-│   │   │   ├── api
-
-│   │   │   │    └── marketDepthRoutes.js
-
-│   │   │   ├── market-depth-analysis.js
-
-│   │   │   ├── tests
-
-│   │   │   ├── package.json
-
-│   │   │   ├── Dockerfile
-
-│   │   │   └── index.js
-
 │   │   ├── data-provider-service/
 
 │   │   │    ├── api
@@ -86,6 +70,26 @@ Jest is used to test the different parts of the application, ensuring that every
 │   │   │    ├── Dockerfile
 
 │   │   │    └── index.js
+
+│   │   ├── market-depth-service/
+
+│   │   │   ├── api
+
+│   │   │   │    └── marketDepthRoutes.js
+
+│   │   │   ├── market-depth-analysis.js
+
+│   │   │   ├── tests
+
+│   │   │       └── market-depth-analysis.test.js
+
+│   │   │   ├── package.json
+
+│   │   │   ├── Dockerfile
+
+│   │   │   └── index.js
+
+├── jest.config.js
 
 ├── server.js
 
