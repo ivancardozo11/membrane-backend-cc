@@ -2,7 +2,7 @@ import express from 'express';
 import morgan from 'morgan';
 import winston from 'winston';
 import apiRoutes from './src/api/routes/routes.js';
-
+import dataProviderService from './src/microservices/data-provider-service/index.js';
 
 // Initialize the winston logger for logging server events
 const logger = winston.createLogger({
@@ -56,6 +56,8 @@ app.use(express.urlencoded({ extended: false }));
 // API routes
 app.use('/api', apiRoutes);
 
+// Start the data provider service
+dataProviderService.start();
 
 // Set the server port
 const port = process.env.PORT || 8080;
@@ -65,3 +67,5 @@ app.listen(port, () => {
   // Use the winston logger to log server startup event
   logger.info(`Server started on port ${port}🚀🚀🚀`);
 });
+
+export default appServer;

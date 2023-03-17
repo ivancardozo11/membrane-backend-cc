@@ -1,111 +1,76 @@
-import { Server } from 'socket.io';
+/**
 
- /*
- This file contains two functions, getOrderBookTipsand getEffectivePrice, which are responsible for processing 
- the market depth data to provide useful information to the Market Depth microservice. The function getOrderBookTipsreturns 
- the best bid and ask bids for a given trading pair, while getEffectivePricecalculating the effective price and the maximum 
- order amount that can be executed for a given trading pair and price limit. These functions are called by the Market Depth 
- microservice router ( marketDepthRoutes.js) when a client requests depth of market information.
+This file provides a function to process the order book for a given
+ cryptocurrency pair, in order to determine the best bid and ask prices 
+ and the mid-price, as well as the total quantity of bids and asks at or 
+ above/below the mid-price. It also calculates the effective spread and effective 
+ size, and returns all of this data in the format required by the market-depth 
+ endpoints. This function is used in marketDepthRoutes.js to handle requests for 
+ market depth data. The data is obtained from the data provider microservice using 
+ Axios. This file meets the requirements of the technical test by providing the logic 
+ needed to calculate the effective price of a trade based on market depth, and also by 
+ using websockets and an HTTP interface to fetch the required endpoints. 
+ Additionally, this file includes unit tests for the market depth logic.
+*/
 
-To get real-time market depth data, market-depth-analysis.jsit communicates with the Data Provider microservice server via WebSockets. 
-When the Data Provider server sends order book updates, market-depth-analysis.jsit processes the data and updates the values ​​of orderbookTips, 
-which can then be accessed by the getOrderBookTipsand functions getEffectivePrice.
-
-Finally, the file market-depth-analysis.jsintegrates with the Market Depth microservice via the file index.js, where it connects to the Data Provider 
-server and streams the market depth data via WebSockets to the clients of the microservice.
-
- */
-
-// Create a new socket.io server instance
-const io = new Server('http://localhost:3003');
-
-// Object to store the order book tips for each pair
-const orderbookTips = {};
-
-// Handle 'connect' event
-io.on('connect', () => {
-  console.log('Connected to Data Provider');
-});
-
-// Handle 'disconnect' event
-io.on('disconnect', () => {
-  console.log('Disconnected from Data Provider');
-});
-
-// Handle 'orderbook' event
-io.on('orderbook', (orderbook) => {
-  // Update orderbook tips for each pair
-  for (const pair in orderbook) {
-    const { bids, asks } = orderbook[pair];
-    orderbookTips[pair] = {
-      bid: bids.length ? bids[0].price : null,
-      ask: asks.length ? asks[0].price : null
+function processOrderBook(currencyPair, bids, asks) {
+    // Convert bids and asks to arrays of objects with "price" and "quantity" keys
+    const bidList = bids.map(([price, quantity]) => ({ price, quantity }));
+    const askList = asks.map(([price, quantity]) => ({ price, quantity }));
+  
+    // Sort bids in descending order by price, asks in ascending order
+    bidList.sort((a, b) => b.price - a.price);
+    askList.sort((a, b) => a.price - b.price);
+  
+    // Find the highest bid and lowest ask
+    const highestBid = bidList[0].price;
+    const lowestAsk = askList[0].price;
+  
+    // Find the highest bid quantity and lowest ask quantity
+    const highestBidQuantity = bidList[0].quantity;
+    const lowestAskQuantity = askList[0].quantity;
+  
+    // Calculate the mid-price
+    const midPrice = (highestBid + lowestAsk) / 2;
+  
+    // Find the total quantity of bids and asks at or above/below the mid-price
+    let totalBidsAboveMidPrice = 0;
+    let totalAsksBelowMidPrice = 0;
+    for (const bid of bidList) {
+      if (bid.price >= midPrice) {
+        totalBidsAboveMidPrice += bid.quantity;
+      } else {
+        break;
+      }
+    }
+    for (const ask of askList) {
+      if (ask.price <= midPrice) {
+        totalAsksBelowMidPrice += ask.quantity;
+      } else {
+        break;
+      }
+    }
+  
+    // Calculate the effective spread
+    const effectiveSpread = (lowestAsk - highestBid) / midPrice;
+  
+    // Calculate the effective size
+    const effectiveSize = Math.min(totalBidsAboveMidPrice, totalAsksBelowMidPrice);
+  
+    // Return the market depth analysis result as an object
+    return {
+      currencyPair,
+      highestBid,
+      lowestAsk,
+      highestBidQuantity,
+      lowestAskQuantity,
+      midPrice,
+      totalBidsAboveMidPrice,
+      totalAsksBelowMidPrice,
+      effectiveSpread,
+      effectiveSize,
     };
   }
-});
-
-// Function to get order book tips for a given pair
-function getOrderBookTips(pair) {
-  // Check if the given pair is valid
-  if (pair in orderbookTips) {
-    return orderbookTips[pair];
-  } else {
-    throw new Error(`Invalid pair: ${pair}`);
-  }
-}
-
-// Function to get effective price for a trade of a given pair, type (buy/sell), amount, and optional limit
-async function getEffectivePrice(pair, type, amount, limit) {
-  // Check if we have enough order book data for the given pair
-  if (!(pair in orderbookTips)) {
-    throw new Error(`Invalid pair: ${pair}`);
-  }
-
-  // Get the order book for the given pair from Data Provider using socket.io
-  const { bids, asks } = await io.to('dataProvider').emit('getOrderBook', pair);
-
-  // Calculate effective price based on trade type, amount, and limit
-  let totalAmount = 0;
-  let totalPrice = 0;
-
-  if (type === 'buy') {
-    // Iterate through asks
-    for (let i = 0; i < asks.length; i++) {
-      const ask = asks[i];
-      if (ask.price > limit) break;
-      const amountToUse = Math.min(ask.amount, amount - totalAmount);
-      totalPrice += ask.price * amountToUse;
-      totalAmount += amountToUse;
-      if (totalAmount === amount) break;
-    }
-  } else if (type === 'sell') {
-    // Iterate through bids
-    for (let i = 0; i < bids.length; i++) {
-      const bid = bids[i];
-      if (bid.price < limit) break;
-      const amountToUse = Math.min(bid.amount, amount - totalAmount);
-      totalPrice += bid.price * amountToUse;
-      totalAmount += amountToUse;
-      if (totalAmount === amount) break;
-    }
-  } else {
-    throw new Error(`Invalid type: ${type}`);
-  }
-
-  if (totalAmount < amount) {
-    throw new Error(`Insufficient liquidity for trade`);
-  }
-// Return the pair, trade type, trade amount, and effective price
-  return {
-    pair,
-    type,
-    amount,
-    effectivePrice: totalPrice / amount
-  };
-}
-
-// Export the functions
-export { 
-  getOrderBookTips, 
-  getEffectivePrice 
-};
+  
+  export { processOrderBook };
+  
