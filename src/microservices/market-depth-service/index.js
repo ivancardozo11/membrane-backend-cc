@@ -54,4 +54,4 @@ const server = app.listen(3001, () => {
   logger.info('Market Depth Service is running on port 3001');
 });
 
-export default marketDepthServer;
+export default server;

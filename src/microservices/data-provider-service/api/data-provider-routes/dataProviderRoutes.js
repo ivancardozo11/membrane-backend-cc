@@ -10,7 +10,7 @@ const getLatestMarketData = async (pair) => {
   const marketDepthServiceUrl = 'http://localhost:3001';
 
   // Make a GET request to the market depth service to retrieve the latest market data for the specified pair
-  const response = await axios.get(`${marketDepthServiceUrl}/market-data/${pair}`);
+  const response = await axios.get(`${marketDepthServiceUrl}/market-depth/${pair}`);
   // Return the latest market data
   return response.data;
 };
@@ -32,17 +32,21 @@ dataProviderRoutes.get('/:pair', async (req, res) => {
 });
 
 // Handle WebSocket connections for real-time market data updates
-dataProviderRoutes.ws('/:pair', (ws, req) => {
-  const pair = req.params.pair;
+const io = new Server();
 
-  // Register the WebSocket client to receive real-time market data updates from the market-depth-service
-  const io = new Server();
-  const socket = io('http://localhost:3001');
-  socket.emit('subscribe', pair);
+io.on('connection', (socket) => {
+  socket.on('subscribe', (pair) => {
+    console.log(`Socket subscribed to ${pair}`);
 
-  // Send real-time market data updates to the client
-  socket.on('market-data', (data) => {
-    ws.send(JSON.stringify(data));
+    // Register the WebSocket client to receive real-time market data updates from the market-depth-service
+    const socket = io('http://localhost:3001');
+    socket.emit('subscribe', pair);
+
+    // Send real-time market data updates to the client
+    socket.on('market-data', (data) => {
+      console.log(`Received market data for ${pair}: ${data}`);
+      socket.emit('market-data', data);
+    });
   });
 });
 

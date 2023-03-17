@@ -1,0 +1,4 @@
+{"level":"info","message":"Starting data provider service...","service":"data-provider-service","timestamp":"2023-02-22 19:20:17"}
+{"level":"info","message":"Data provider service running on port 3000","service":"data-provider-service","timestamp":"2023-02-22 19:20:17"}
+{"level":"info","message":"Starting data provider service...","service":"data-provider-service","timestamp":"2023-02-22 19:21:08"}
+{"level":"info","message":"Data provider service running on port 3000","service":"data-provider-service","timestamp":"2023-02-22 19:21:08"}
