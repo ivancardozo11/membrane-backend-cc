@@ -131,12 +131,6 @@ npm run dev
 npm start
 ```
 
-## Trigger the endpoint GET contacts/sync on local server:
-
-```sh
-http://localhost:3000/api/data-provider
-```
-
 
 # Tests:
 
